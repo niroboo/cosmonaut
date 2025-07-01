@@ -4,7 +4,7 @@ import type { ArrayElement, Path, PathValue, PickPath, UnionToIntersection } fro
 
 const TAB = '  ';
 
-class BaseQueryBuilder<T extends Record<string, any>> {
+export class BaseQueryBuilder<T extends Record<string, any>> {
   private conditions: Array<{ expression: string; path: string; value?: any }> = [];
   protected nestedBuilders: Array<ConjunctionQueryBuilder<T> | DisjunctionQueryBuilder<T>> = [];
   protected connectionType: 'conjunction' | 'disjunction' = 'conjunction';
@@ -191,7 +191,7 @@ class BaseQueryBuilder<T extends Record<string, any>> {
   }
 }
 
-class ConjunctionQueryBuilder<T extends Record<string, any>> extends BaseQueryBuilder<T> {
+export class ConjunctionQueryBuilder<T extends Record<string, any>> extends BaseQueryBuilder<T> {
   constructor() {
     super();
     this.connectionType = 'conjunction';
@@ -206,7 +206,7 @@ class ConjunctionQueryBuilder<T extends Record<string, any>> extends BaseQueryBu
   }
 }
 
-class DisjunctionQueryBuilder<T extends Record<string, any>> extends BaseQueryBuilder<T> {
+export class DisjunctionQueryBuilder<T extends Record<string, any>> extends BaseQueryBuilder<T> {
   constructor() {
     super();
     this.connectionType = 'disjunction';
