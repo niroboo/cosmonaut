@@ -9,6 +9,10 @@ export class BaseQueryBuilder<T extends Record<string, any>> {
   protected nestedBuilders: Array<ConjunctionQueryBuilder<T> | DisjunctionQueryBuilder<T>> = [];
   protected connectionType: 'conjunction' | 'disjunction' = 'conjunction';
 
+  public get numConditions(): number {
+    return this.conditions.length + this.nestedBuilders.reduce((a, b) => a + b.numConditions, 0);
+  }
+
   constructor() {
     this.equals = this.equals.bind(this);
     this.notEquals = this.notEquals.bind(this);
@@ -139,9 +143,10 @@ export class BaseQueryBuilder<T extends Record<string, any>> {
 
   arrayContains<P extends Exclude<Path<T>, NonNullable<V> extends any[] ? never : P>, V extends PathValue<T, P>>(
     path: P,
-    value: ArrayElement<V>
+    value: ArrayElement<V>,
+    partialMatch = false
   ) {
-    this.addCondition(`ARRAY_CONTAINS($path, $value)`, path, value);
+    this.addCondition(`ARRAY_CONTAINS($path, $value, ${String(partialMatch)})`, path, value);
     return this;
   }
 
@@ -169,11 +174,13 @@ export class BaseQueryBuilder<T extends Record<string, any>> {
           );
       }),
       ...this.nestedBuilders.map((nestedBuilder) => {
+        if(nestedBuilder.numConditions === 0) return undefined;
+
         const { conditionsExpression: nestedConditionsExpression } = (
           nestedBuilder as BaseQueryBuilder<T>
         ).getConditionsExpression(noParams, parameters, indention + 1);
         return `(\n${TAB.repeat(indention + 1)}${nestedConditionsExpression}\n${TAB.repeat(indention)})`;
-      }),
+      }).filter(Boolean),
     ].join(`\n${TAB.repeat(indention)}${this.connectionType === 'conjunction' ? 'AND' : 'OR'} `);
 
     return { conditionsExpression, parameters };
