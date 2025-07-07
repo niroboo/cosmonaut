@@ -65,4 +65,23 @@ GROUP BY c.mode, c.softDeleted.by",
       .query(container)
       .fetchAll();
   });
+
+  it('should ignore empty OR\'s and AND\'s', () => {
+    const { querySpec } = new CosmosQueryBuilder<Machine>()
+      .select('id')
+      .greater('price', 50)
+      .or((d) => d.and(a => a.or(o => o)))
+      .take(10)
+      .build({ pretty: true, noParams: true });
+
+    expect(querySpec).toMatchInlineSnapshot(`
+{
+  "parameters": [],
+  "query": "SELECT c.id
+FROM c
+WHERE c.price > 50
+OFFSET 0 LIMIT 10",
+}
+`);
+  });
 });
