@@ -5,11 +5,11 @@ A type-safe CosmosDB query builder library for Node to be used alongside with th
 ## Installation
 
 ```bash
-npm i @heivo/cosmonaut
+npm i @niroboo/cosmonaut
 // or
-yarn add @heivo/cosmonaut
+yarn add @niroboo/cosmonaut
 // or
-pnpm add @heivo/cosmonaut
+pnpm add @niroboo/cosmonaut
 ```
 
 This library has no dependencies and 2 optional peer dependencies:
@@ -39,7 +39,7 @@ interface Machine {
 You can can build a query like this:
 
 ```ts
-import { CosmosQueryBuilder } from '@heivo/cosmonaut';
+import { CosmosQueryBuilder } from '@niroboo/cosmonaut';
 
 const { querySpec } = new CosmosQueryBuilder<Machine>()
   .select('id', 'mode', 'serial', 'isConnected')
