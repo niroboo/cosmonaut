@@ -12,6 +12,7 @@ interface Machine {
     at: string;
     by: string;
   };
+  children: Machine[];
 }
 
 describe('CosmosQueryBuilder', () => {
@@ -71,15 +72,24 @@ GROUP BY c.mode, c.softDeleted.by",
       .select('id')
       .greater('price', 50)
       .or((d) => d.and(a => a.or(o => o)))
+      .arrayContains('children', { id: '123',  }, true)
       .take(10)
-      .build({ pretty: true, noParams: true });
+      .build({ pretty: true });
 
     expect(querySpec).toMatchInlineSnapshot(`
 {
-  "parameters": [],
+  "parameters": [
+    {
+      "name": "@children",
+      "value": {
+        "id": "123",
+      },
+    },
+  ],
   "query": "SELECT c.id
 FROM c
 WHERE c.price > 50
+AND ARRAY_CONTAINS(c.children, @children, true)
 OFFSET 0 LIMIT 10",
 }
 `);
