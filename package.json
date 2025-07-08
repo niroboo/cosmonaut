@@ -1,6 +1,6 @@
 {
   "name": "@niroboo/cosmonaut",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "A CosmosDB query builder library for Node",
   "author": "",
   "license": "MIT",
