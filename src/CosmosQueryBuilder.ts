@@ -1,6 +1,6 @@
 import type { Container, SqlParameter, SqlQuerySpec, JSONValue, FeedOptions } from '@azure/cosmos';
 import { unpretty } from './helpers';
-import type { ArrayElement, Path, PathValue, PickPath, UnionToIntersection } from './typeHelpers';
+import { ArrayElement, PartialArrayElement, Path, PathValue, PickPath, UnionToIntersection } from './typeHelpers';
 
 const TAB = '  ';
 
@@ -143,9 +143,19 @@ export class BaseQueryBuilder<T extends Record<string, any>> {
 
   arrayContains<P extends Exclude<Path<T>, NonNullable<V> extends any[] ? never : P>, V extends PathValue<T, P>>(
     path: P,
+    value: PartialArrayElement<V>,
+    partialMatch: true
+  ): this
+  arrayContains<P extends Exclude<Path<T>, NonNullable<V> extends any[] ? never : P>, V extends PathValue<T, P>>(
+    path: P,
     value: ArrayElement<V>,
-    partialMatch = false
-  ) {
+    partialMatch?: false
+  ): this
+  arrayContains<P extends Exclude<Path<T>, NonNullable<V> extends any[] ? never : P>, V extends PathValue<T, P>>(
+    path: P,
+    value: ArrayElement<V> | PartialArrayElement<V>,
+    partialMatch=false
+  ): this {
     this.addCondition(`ARRAY_CONTAINS($path, $value, ${String(partialMatch)})`, path, value);
     return this;
   }
@@ -153,7 +163,7 @@ export class BaseQueryBuilder<T extends Record<string, any>> {
   private addCondition<P extends Path<T>, V extends PathValue<T, P>>(
     expression: string,
     path: P,
-    value?: V | Array<V> | ArrayElement<V>
+    value?: V | Array<V> | ArrayElement<V> | PartialArrayElement<V>
   ) {
     this.conditions.push({ expression, path: `c.${String(path)}`, value });
   }

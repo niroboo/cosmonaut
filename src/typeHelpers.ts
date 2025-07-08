@@ -1,4 +1,5 @@
 export type ArrayElement<T> = T extends Array<infer Element> ? Element : never;
+export type PartialArrayElement<T> = T extends Array<infer Element> ? Partial<Element> : never;
 
 export type UnionToIntersection<T> = (T extends any ? (x: T) => any : never) extends (x: infer R) => any ? R : never;
 
