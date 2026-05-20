@@ -19,12 +19,15 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: '22'
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org'
           package-manager-cache: false  # never use caching in release builds
-          
+
+      # due to a bug with npm, promise-retry needs to be installed manually before installing npm@latest
+      - run: npm install -g promise-retry
+      
       # Ensure npm 11.5.1 or later for trusted publishing
-      - run: npm install -g npm@11.5.1
+      - run: npm install -g npm@latest
       
       - run: npm ci
       - run: npm run build
